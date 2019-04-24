@@ -104,7 +104,7 @@ public class ESUtilsTest {
         PowerMockito.when(CommonUtils.doHttpPut(anyString(), anyString())).thenReturn("{}");
         PowerMockito.when(CommonUtils.doHttpPost(anyString(), anyString())).thenReturn("{\"count\":\"10\"}");
 
-  		assertNotNull(ESUtils.publishMetrics(evalResults));
+  		assertNotNull(ESUtils.publishMetrics(evalResults,"type"));
   	}
 
     /**
@@ -123,7 +123,7 @@ public class ESUtilsTest {
         PowerMockito.when(CommonUtils.doHttpPut(anyString(), anyString())).thenReturn("{}");
         PowerMockito.when(CommonUtils.doHttpPost(anyString(), anyString())).thenThrow(Exception.class);
 
-  		assertFalse(ESUtils.publishMetrics(evalResults));
+  		assertFalse(ESUtils.publishMetrics(evalResults,"type"));
   	}
 
     /**
@@ -141,7 +141,7 @@ public class ESUtilsTest {
         PowerMockito.when(CommonUtils.doHttpPut(anyString(), anyString())).thenReturn("{}");
         PowerMockito.when(CommonUtils.doHttpPost(anyString(), anyString())).thenReturn("{\"count\":\"10\"}");
 
-  		assertNotNull(ESUtils.publishMetrics(evalResults));
+  		assertNotNull(ESUtils.publishMetrics(evalResults,"type"));
   	}
 
     /**

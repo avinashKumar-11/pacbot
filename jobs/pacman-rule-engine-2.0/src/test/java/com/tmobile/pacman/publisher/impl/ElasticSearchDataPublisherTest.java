@@ -1,28 +1,46 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- *
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-
+/**
+  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+  Purpose:
+  Author :kkumar28
+  Modified Date: Jun 27, 2018
+  
+**/
+/*
+ *Copyright 2016-2017 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ *Licensed under the Amazon Software License (the "License"). You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ *
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.tmobile.pacman.publisher.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -38,17 +56,17 @@ import com.tmobile.pacman.util.ReflectionUtils;
 /**
  * The Class ElasticSearchDataPublisherTest.
  *
- * @author kkumar
+ * @author kkumar28
  */
 @PowerMockIgnore({"org.apache.http.conn.ssl.*", "javax.net.ssl.*" , "javax.crypto.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ReflectionUtils.class,ESUtils.class,CommonUtils.class})
 public class ElasticSearchDataPublisherTest {
-
-
+    
+    
     /** The elastic search data publisher. */
     private ElasticSearchDataPublisher elasticSearchDataPublisher=null;
-
+    
     /**
      * Test publish with no annotations.
      *
@@ -61,9 +79,9 @@ public class ElasticSearchDataPublisherTest {
        // RestClientBuilder restClientBuilder = PowerMockito.mock(RestClientBuilder.class);
        // PowerMockito.when(RestClient.builder(any())).thenReturn(restClientBuilder);
       //  HttpHost httpHost = PowerMockito.mock(HttpHost.class);
-    //    PowerMockito.whenNew(HttpHost.class).withAnyArguments().thenReturn(httpHost);
+    //    PowerMockito.whenNew(HttpHost.class).withAnyArguments().thenReturn(httpHost);  
         elasticSearchDataPublisher = new ElasticSearchDataPublisher(true);
-
+        
         List<AutoFixTransaction> autoFixTrans = Lists.newArrayList();
     	AutoFixTransaction autoFixTransaction = new AutoFixTransaction();
     	autoFixTransaction.setDesc("desc");
@@ -74,10 +92,10 @@ public class ElasticSearchDataPublisherTest {
     	autoFixTransaction.setTransactionId("transactionId");
     	autoFixTransaction.setTransationTime("transationTime");
     	autoFixTrans.add(autoFixTransaction);
-
-    	AutoFixTransaction autoFixTransaction1 = new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, "resourceId", "ruleId", "executionId", "transactionId", "desc");
+    	
+    	AutoFixTransaction autoFixTransaction1 = new AutoFixTransaction(AutoFixAction.AUTOFIX_ACTION_BACKUP, "resourceId", "ruleId", "executionId", "transactionId", "desc","type","targetType","annotationId");
     	assertTrue(autoFixTransaction1.equals(autoFixTransaction1));
-    	assertNotNull(elasticSearchDataPublisher.publishAutoFixTransactions(autoFixTrans));
-    }
-
+    	assertNotNull(elasticSearchDataPublisher.publishAutoFixTransactions(autoFixTrans,new HashMap<>()));
+    } 
+    
 }

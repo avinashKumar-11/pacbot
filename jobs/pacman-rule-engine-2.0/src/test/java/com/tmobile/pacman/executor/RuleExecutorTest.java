@@ -78,7 +78,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
         List<Map<String, String>> resources = new ArrayList<>();
 
 //        PowerMockito.mockStatic(CommonUtils.class);
@@ -123,7 +123,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
         List<Map<String, String>> resources = new ArrayList<>();
         Map<String, String> issue = new HashMap<>();
         issue.put(PacmanSdkConstants.DOC_ID, "testId");
@@ -153,7 +153,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
         PowerMockito.when(ESUtils.getResourcesFromEs(anyString(), anyString(), anyMap(), anyList())).thenReturn(new ArrayList<>());
         PowerMockito.mockStatic(CommonUtils.class);
 //        PowerMockito.mockStatic(CommonUtils.class);
@@ -180,7 +180,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
 
 
         JsonObject input = new JsonObject();
@@ -223,7 +223,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
 
         final Class<?> ruleClass = TestPacRule.class;
         List<Map<String, String>> resources = new ArrayList<>();
@@ -253,7 +253,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
 
         final Class<?> ruleClass = TestPacRule.class;
         List<Map<String, String>> resources = new ArrayList<>();
@@ -283,7 +283,7 @@ public class RuleExecutorTest {
 
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
-        PowerMockito.when(ESUtils.publishMetrics(anyMap())).thenReturn(Boolean.TRUE);
+        PowerMockito.when(ESUtils.publishMetrics(anyMap(),anyString())).thenReturn(Boolean.TRUE);
 
         final Class<?> ruleClass = TestPacRule.class;
         List<Map<String, String>> resources = new ArrayList<>();

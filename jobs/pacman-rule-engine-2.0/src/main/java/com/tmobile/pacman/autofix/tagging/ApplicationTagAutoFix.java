@@ -16,6 +16,7 @@
 
 package com.tmobile.pacman.autofix.tagging;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -102,7 +103,12 @@ public class ApplicationTagAutoFix extends BaseFix {
      */
     @Override
     public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
-       return new AutoFixTransaction(annotation.get("_resourceid"), annotation.get("ruleId"), annotation.get("accountid"), annotation.get("region"), annotation.get(PacmanSdkConstants.CORRECT_APP_TAG_KEY));
+    	LinkedHashMap<String,String> transactionParams = new LinkedHashMap();
+		transactionParams.put("resourceId", annotation.get("_resourceid"));
+		transactionParams.put("accountId", annotation.get("accountid"));
+		transactionParams.put("region", annotation.get("region"));
+		transactionParams.put("applicationTag", annotation.get(PacmanSdkConstants.CORRECT_APP_TAG_KEY));
+		return new AutoFixTransaction(null,transactionParams);
     }
 
 

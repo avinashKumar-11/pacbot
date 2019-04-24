@@ -79,11 +79,8 @@ public class UntaggedUnusedVolumeAutofix  extends BaseFix {
             Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
         return true;
     }
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.commons.autofix.BaseFix#addDetailsToTransactionLog()
-     */
     @Override
     public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
-       return new AutoFixTransaction(annotation.get("_resourceid"), annotation.get("ruleId"), annotation.get("accountid"), annotation.get("region"),null);
+       return new AutoFixTransaction(annotation.get("_resourceid"), annotation.get("ruleId"), annotation.get("accountid"), annotation.get("region"),null,null,null);
     }
 }

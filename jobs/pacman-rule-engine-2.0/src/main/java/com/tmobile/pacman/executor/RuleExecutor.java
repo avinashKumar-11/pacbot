@@ -110,7 +110,8 @@ public class RuleExecutor {
         Boolean errorWhileProcessing = Boolean.FALSE;
 
         Map<String, Object> ruleEngineStats = new HashMap<>();
-
+      //this is elastic search type to put rule engine stats in  
+        final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         if (args.length > 0) {
             ruleParams = args[0];
             ruleParam = CommonUtils.createParamMap(ruleParams);
@@ -148,7 +149,7 @@ public class RuleExecutor {
         ruleEngineStats.put("startTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
         // publish the stats once to let ES know rule engine has started.
-        ESUtils.publishMetrics(ruleEngineStats);
+        ESUtils.publishMetrics(ruleEngineStats,type);
         ruleEngineStats.put("timeTakenToFindExecutable", CommonUtils.getElapseTimeSince(startTime));
         // get the resources based on Type
         // List<Map<String, String>> resources =
@@ -324,7 +325,7 @@ public class RuleExecutor {
                 PacmanSdkConstants.DATE_FORMAT));
         ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
         try{
-                ESUtils.publishMetrics(ruleEngineStats);
+        	ESUtils.publishMetrics(ruleEngineStats,type);
         }catch(Exception e) {
             logger.error("unable to publish metrices",e);
         }

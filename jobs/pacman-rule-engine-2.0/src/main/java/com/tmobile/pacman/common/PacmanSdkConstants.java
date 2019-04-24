@@ -515,5 +515,25 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     
     /** The source. */
     String SOURCE = "source";
+    
+    String PACMAN_MAIL_TEMPLATE_COLUMNS = "pacman.auto.fix.mail.template.columns.";
+    
+    /** default string **/
+    String PAC_DEFAULT = "default";
+    
+    /**default delay key**/
+    String PAC_AUTO_FIX_DELAY_KEY= "pacman.autofix.waittime";
+    
+    /** **/
+    String AUTH_API_OWNER_SLACK_HANDLE = "api.auth.owner.slack.handle";
+    
+    /** **/
+    String TYPE_FOR_AUTO_FIX_RECORD  = "autofix";
+    
+    /** **/
+    String TRANSACTION_ID = "transactionId";
+    
+    /****/
+    String TRANSACTION_TIME = "transationTime";
 
 }
