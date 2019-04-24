@@ -1,19 +1,25 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- *
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-
+/**
+  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+  Purpose:
+  Author :kkumar28
+  Modified Date: Jun 14, 2017
+  
+**/
 
 package com.tmobile.pacman.executor;
 
@@ -24,7 +30,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -41,6 +46,7 @@ import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
+import com.tmobile.pacman.reactors.PacEventHandler;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
 import com.tmobile.pacman.util.AuditUtils;
@@ -55,16 +61,16 @@ import com.tmobile.pacman.util.RuleExecutionUtils;
 /**
  * This class is responsible for firing the execute method of the rule.
  *
- * @author kkumar
+ * @author kkumar28
  */
 public class RuleExecutor {
 
     /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(RuleExecutor.class);
-
+    
     /** The is resource filter exists. */
     private Boolean isResourceFilterExists = Boolean.FALSE;
-
+    
     /**  Annotation Publisher *. */
     AnnotationPublisher annotationPublisher;
 
@@ -84,13 +90,25 @@ public class RuleExecutor {
         // Method main = clazz.getMethod("main", String[].class);
         // main.invoke(null, new Object[]{args});
         // if(1==1) return;
+        
+        
         String executionId = UUID.randomUUID().toString(); // this is the unique
-                                                           // id for this pass
-                                                           // of execution
-        try {
-            new RuleExecutor().run(args, executionId);
-        } catch (Exception e) {
-            logger.error("error while in run method for executionId ->" + executionId, e);
+        // id for this pass
+        // of execution
+        
+        //check if triggered by event of square one project.
+        logger.debug("received input-->" + args[0]);
+        if(PacEventHandler.isInvocationSourceAnEvent(args[0]))
+        {
+            logger.info("input source detected as event, will process event now.");
+            new PacEventHandler().handleEvent(executionId,args[0]);
+        }else
+        {
+                try {   logger.info("input source detected as rule, will process rule now.");
+                        new RuleExecutor().run(args, executionId);
+                } catch (Exception e) {
+                    logger.error("error while in run method for executionId ->" + executionId, e);
+                }
         }
     }
 
@@ -110,8 +128,10 @@ public class RuleExecutor {
         Boolean errorWhileProcessing = Boolean.FALSE;
 
         Map<String, Object> ruleEngineStats = new HashMap<>();
-      //this is elastic search type to put rule engine stats in  
+        
+        //this is elastic search type to put rule engine stats in  
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
+        final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         if (args.length > 0) {
             ruleParams = args[0];
             ruleParam = CommonUtils.createParamMap(ruleParams);
@@ -124,7 +144,7 @@ public class RuleExecutor {
             }
             logger.debug("rule Param String " + ruleParams);
             logger.debug("target Type :" + ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-            logger.debug("rule Key : " + ruleParam.get(PacmanSdkConstants.RULE_KEY));
+            logger.debug("rule Key : " + ruleParam.get("ruleKey"));
         } else {
             logger.debug(
                     "No arguments available for rule execution, unable to identify the rule due to missing arguments");
@@ -142,6 +162,7 @@ public class RuleExecutor {
         logger.debug("uncaught exception handler engaged.");
         setShutDownHook(ruleEngineStats);
         logger.debug("shutdown hook engaged.");
+        ruleEngineStats.put(PacmanSdkConstants.JOB_ID, JOB_ID);
         ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_RUNNING);
         ruleEngineStats.put(PacmanSdkConstants.EXECUTION_ID, executionId);
         ruleEngineStats.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
@@ -197,7 +218,7 @@ public class RuleExecutor {
             ProgramExitUtils.exitWithError();
         }
 
-
+        
         startTime = resetStartTime();
 
         logger.info("total objects received for rule " + resources.size());
@@ -248,14 +269,14 @@ public class RuleExecutor {
             if(ruleParam.containsKey(PacmanSdkConstants.RULE_CONTACT))
             {
                 String message = String.format("%s total resource -> %s , total results returned by rule-> %s",ruleParam.get(PacmanSdkConstants.RULE_ID), resources.size(),evaluations.size());
-                //send  message about missing evaluations
+                //send  message about missing evaluations 
                 if(notifyRuleOwner(ruleParam.get(PacmanSdkConstants.RULE_CONTACT),message)){
                     logger.trace(String.format("message sent to %s" ,ruleParam.get(PacmanSdkConstants.RULE_CONTACT)));
                 }else{
                     logger.error(String.format("unable to send message to %s" ,ruleParam.get(PacmanSdkConstants.RULE_CONTACT)));
                 }
             }
-
+            
             List<String> allEvaluvatedResources = evaluations.stream()
                     .map(obj -> obj.getAnnotation().get(PacmanSdkConstants.DOC_ID)).collect(Collectors.toList());
             logger.debug("all evaluated resource count" + allEvaluvatedResources.size());
@@ -325,7 +346,7 @@ public class RuleExecutor {
                 PacmanSdkConstants.DATE_FORMAT));
         ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
         try{
-        	ESUtils.publishMetrics(ruleEngineStats,type);
+                ESUtils.publishMetrics(ruleEngineStats,type);
         }catch(Exception e) {
             logger.error("unable to publish metrices",e);
         }
@@ -341,7 +362,7 @@ public class RuleExecutor {
     private void setLogLevel(Map<String, String> ruleParam) {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(ch.qos.logback.classic.Level.toLevel(ruleParam.get("logLevel"),ch.qos.logback.classic.Level.ERROR));
-
+        
     }
 
     /**
@@ -353,7 +374,7 @@ public class RuleExecutor {
      */
     private boolean notifyRuleOwner(String user, String message) {
         SlackMessageRelay messageRelay = new SlackMessageRelay();
-        if(!Strings.isNullOrEmpty(user) && !user.contains("@")){
+        if(!Strings.isNullOrEmpty(user)){
             return messageRelay.sendMessage(user, message);
         }
         return false;
@@ -426,6 +447,9 @@ public class RuleExecutor {
         }
         Status status;
         int issueFoundCounter = 0;
+        //Pre populate the existing issues
+        annotationPublisher.populateExistingIssuesForType(ruleParam);
+        
         for (RuleResult result : evaluations) {
             annotation = result.getAnnotation();
             if (PacmanSdkConstants.STATUS_SUCCESS.equals(result.getStatus())) {
@@ -454,7 +478,10 @@ public class RuleExecutor {
                 }
 
                 annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
-                annotation.put(PacmanSdkConstants.CREATED_DATE, evalDate);
+                // add created date if not an existing issue
+                if(!annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey().containsKey(CommonUtils.getUniqueAnnotationId(annotation))){
+                    annotation.put(PacmanSdkConstants.CREATED_DATE, evalDate);
+                }
                 annotation.put(PacmanSdkConstants.MODIFIED_DATE, evalDate);
                 // annotationPublisher.publishAnnotationToEs(annotation);
                 annotationPublisher.submitToPublish(annotation);
@@ -466,7 +493,7 @@ public class RuleExecutor {
         metrics.put("totalExemptionAppliedForThisRun", exemptionCounter);
         annotationPublisher.setRuleParam(ImmutableMap.<String, String>builder().putAll(ruleParam).build());
         // annotation will contain the last annotation processed above
-        annotationPublisher.populateExistingIssuesForType(ruleParam);
+        
         if (!isResourceFilterExists) {
             annotationPublisher.setExistingResources(resources); // if resources
                                                                  // are not
@@ -539,16 +566,16 @@ public class RuleExecutor {
      * The Class Status.
      */
     static class Status {
-
+        
         /** The status. */
         String status;
-
+        
         /** The reason. */
         String reason;
-
+        
         /** The exemption id. */
         String exemptionId;
-
+        
         /** The exemption expiry date. */
         String exemptionExpiryDate;
 

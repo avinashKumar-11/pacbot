@@ -535,5 +535,33 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     
     /****/
     String TRANSACTION_TIME = "transationTime";
+    
+    String EVENT_ID = "eventId";
+
+    String EVENT_DATA_KEY = "eventData";
+
+    String EVENT_RECEIVE_TIME = "eventReceiveTime";
+
+    String EVENT_PROCESSED_TIME = "eventProcessedTime";
+
+    String EVENT_NAME = "evetName";
+    
+    String EVENTS_INDEX_NAME_KEY = "pacman.es.reactors.index";
+    
+    /** The account. */
+    String ACCOUNT="account";
+    
+    String EVENTS_REGISTRY_KEY = "pacman.es.reactors.registry";
+    
+    /** white list **/
+    String WHITELIST = ".account.whitelist";
+    
+    /** The reactor category. */
+    String REACTOR_CATEGORY = "reactorCategory";
+    
+    String SQUARE_ONE_SLACK_CHANNEL = "square.one.slack.channel";
+    
+    /** **/
+    String JOB_ID = "AWS_BATCH_JOB_ID";
 
 }
