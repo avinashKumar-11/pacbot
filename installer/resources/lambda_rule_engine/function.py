@@ -1,7 +1,7 @@
 from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission
 from core.terraform.resources.aws.cloudwatch import CloudWatchEventRuleResource, CloudWatchEventTargetResource
 from core.terraform.resources.variable import TerraformVariable
-from resources.datastore.es import ESDomain
+from resources.datastore.es import ESDomainPolicy
 from resources.iam.lambda_role import LambdaRole
 from resources.s3.bucket import BucketStorage
 from resources.batch.job import SubmitAndRuleEngineJobDefinition, RuleEngineJobQueue
@@ -11,6 +11,7 @@ from resources.lambda_rule_engine.utils import get_rule_engine_cloudwatch_rules_
 from core.config import Settings
 from core.providers.aws.boto3 import cloudwatch_event
 from core.mixins import MsgMixin
+from resources.pacbot_app.alb import ApplicationLoadBalancer
 import sys
 
 
@@ -24,7 +25,9 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
     environment = {
         'variables': {
             'JOB_QUEUE': RuleEngineJobQueue.get_input_attr('name'),
-            'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_input_attr('name')
+            'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
+            'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
+            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"
         }
     }
 
@@ -44,7 +47,7 @@ class RuleEngineEventRules(CloudWatchEventRuleResource):
     schedule_expression = RulesListVariable.lookup('schedule')
 
     VARIABLES = [RulesListVariable]
-    DEPENDS_ON = [RuleEngineLambdaFunction]
+    DEPENDS_ON = [RuleEngineLambdaFunction, ESDomainPolicy]
     available_args = {
         'name': {'required': True},
         'schedule_expression': {'required': True},
